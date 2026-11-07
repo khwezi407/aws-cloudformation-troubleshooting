@@ -55,7 +55,19 @@ Running `aws cloudformation delete-stack` failed with a `DELETE_FAILED` status. 
 ### The Solution
 I needed to delete the stack but *keep* the S3 bucket and its data. I ran the delete command using the `--retain-resources` flag:
 
-```bash
+
 aws cloudformation delete-stack \
   --stack-name myStack \
   --retain-resources MyBucket
+
+This successfully removed the CloudFormation stack state while leaving the S3 bucket and its files completely intact.
+
+![Alt Text](./screenshots/04-retain-resources.jpg)
+
+
+
+## 📚 Lessons Learned
+- **The Green Banner Trap:** A successful CLI command does not mean the infrastructure was created. Always verify the actual resource state.
+- **WaitConditions & UserData:** The `-e` flag in a userdata script will cause the script to exit immediately on failure, which is exactly what triggers a WaitCondition timeout.
+- **Drift is Inevitable:** In real environments, people will make manual changes. Knowing how to detect and reconcile drift is a critical Cloud Engineering skill.
+- **Protect Data at All Costs:** When tearing down infrastructure, always use `--retain-resources` for stateful resources like S3 buckets or databases to prevent accidental data loss.
