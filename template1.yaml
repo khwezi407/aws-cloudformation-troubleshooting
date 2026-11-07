@@ -1,0 +1,23 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: Troubleshooting lab template with fixed httpd package
+
+Parameters:
+  KeyName:
+    Description: Name of an existing EC2 KeyPair
+    Type: AWS::EC2::KeyPair::KeyName
+
+Resources:
+  MyInstance:
+    Type: AWS::EC2::Instance
+    Properties:
+      ImageId: ami-0c55b159cbfafe1f0 # Amazon Linux 2 AMI
+      InstanceType: t2.micro
+      KeyName: !Ref KeyName
+      UserData:
+        Fn::Base64: !Sub |
+          #!/bin/bash -e
+          yum update -y
+          yum install -y httpd  # <--- THE FIX: changed from 'http' to 'httpd'
+          systemctl start httpd
+          systemctl enable httpd
+          echo "Hello from your web server!" > /var/www/html/index.html
